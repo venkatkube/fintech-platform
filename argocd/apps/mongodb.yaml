@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: mongodb
+    targetRevision: 13.x.x
+    helm:
+      valueFiles:
+      - values/mongodb-values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fintech-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

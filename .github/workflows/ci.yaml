@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    # -----------------------------
+    # Checkout Code
+    # -----------------------------
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # -----------------------------
+    # Setup Docker Buildx
+    # -----------------------------
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # -----------------------------
+    # Login to Docker Hub
+    # -----------------------------
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
+    # -----------------------------
+    # Extract Git SHA (short)
+    # -----------------------------
+    - name: Extract Git SHA
+      id: vars
+      run: echo "SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+    # -----------------------------
+    # Build & Push Docker Image
+    # -----------------------------
+    - name: Build and Push Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/txn-service
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USER }}/txn-service:latest
+          ${{ secrets.DOCKER_USER }}/txn-service:${{ steps.vars.outputs.SHA }}
+        cache-from: type=registry,ref=${{ secrets.DOCKER_USER }}/txn-service:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKER_USER }}/txn-service:buildcache,mode=max
+
+    # -----------------------------
+    # Security Scan (Optional but Recommended)
+    # -----------------------------
+    - name: Scan Image with Trivy
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        image-ref: ${{ secrets.DOCKER_USER }}/txn-service:${{ steps.vars.outputs.SHA }}
+        format: table
+        exit-code: 0

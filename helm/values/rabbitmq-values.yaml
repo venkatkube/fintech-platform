@@ -1,0 +1,17 @@
+auth:
+  username: user
+  password: password
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi

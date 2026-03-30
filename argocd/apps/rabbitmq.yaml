@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: rabbitmq
+    targetRevision: 12.x.x
+    helm:
+      valueFiles:
+      - values/rabbitmq-values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fintech-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
