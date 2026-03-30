@@ -5,7 +5,7 @@ provider "kubernetes" {
 # -------------------------
 # DEV Namespace
 # -------------------------
-resource "kubernetes_namespace" "fintech_dev" {
+resource "kubernetes_namespace_v1" "fintech_dev" {
   metadata {
     name = "fintech-dev"
 
@@ -19,7 +19,7 @@ resource "kubernetes_namespace" "fintech_dev" {
 # -------------------------
 # PROD Namespace
 # -------------------------
-resource "kubernetes_namespace" "fintech_prod" {
+resource "kubernetes_namespace_v1" "fintech_prod" {
   metadata {
     name = "fintech-prod"
 
@@ -33,7 +33,7 @@ resource "kubernetes_namespace" "fintech_prod" {
 # -------------------------
 # Observability Namespace
 # -------------------------
-resource "kubernetes_namespace" "observability" {
+resource "kubernetes_namespace_v1" "observability" {
   metadata {
     name = "observability"
 
@@ -43,10 +43,13 @@ resource "kubernetes_namespace" "observability" {
   }
 }
 
-resource "kubernetes_resource_quota" "dev_quota" {
+# -------------------------
+# Resource Quota (DEV)
+# -------------------------
+resource "kubernetes_resource_quota_v1" "dev_quota" {
   metadata {
     name      = "dev-quota"
-    namespace = kubernetes_namespace.fintech_dev.metadata[0].name
+    namespace = kubernetes_namespace_v1.fintech_dev.metadata[0].name
   }
 
   spec {
