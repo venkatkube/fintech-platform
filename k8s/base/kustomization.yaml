@@ -1,0 +1,4 @@
+resources:
+- txn-service.yaml
+- service.yaml
+- hpa.yaml
