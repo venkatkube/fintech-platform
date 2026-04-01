@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: txn-service
-  namespace: fintech
   labels:
     app: txn-service
     tier: backend
